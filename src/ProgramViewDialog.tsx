@@ -223,7 +223,7 @@ function MakeReserveProgram(config: MiraviewConfig, program?: ProgramPair){
   `;
 
   const startdate = new Date(program.program.startAt);
-  const filename: string = '[' + padStr(startdate.getFullYear(),4) + padStr(startdate.getMonth(),2)+ padStr(startdate.getDay(),2) + '-' +
+  const filename: string = '[' + padStr(startdate.getFullYear(),4) + padStr(startdate.getMonth()+1,2)+ padStr(startdate.getDate(),2) + '-' +
                     padStr(startdate.getHours(),2) + padStr(startdate.getMinutes(),2) + ']['+ program.service.name + ']' + program.program.name ?? 'タイトル不明';
 
   jsonstr = jsonstr.replace("PROGRAM_ID",program.program.id.toString())

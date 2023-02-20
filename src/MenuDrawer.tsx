@@ -8,8 +8,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import NewspaperIcon from '@mui/icons-material/Newspaper';
+import AccessAlarmsIcon from '@mui/icons-material/AccessAlarms';
 import RadioIcon from '@mui/icons-material/Radio';
 import SettingsIcon from '@mui/icons-material/Settings';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import SaveIcon from '@mui/icons-material/Save';
 
 import { ViewTypes } from './types';
 import type { ViewType } from './types';
@@ -47,9 +50,25 @@ export default function MenuDrawer(props: { open?: boolean, onClose: () => void,
         <ListItem>
           <ListItemButton data-viewtype={ ViewTypes.Reserved } onClick={ handleMenuButtonClick }>
             <ListItemIcon>
-              <NewspaperIcon />
+              <AccessAlarmsIcon />
             </ListItemIcon>
             <ListItemText primary={ ViewTypes.Reserved } />
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
+          <ListItemButton data-viewtype={ ViewTypes.Recording } onClick={ handleMenuButtonClick }>
+            <ListItemIcon>
+              <FiberManualRecordIcon />
+            </ListItemIcon>
+            <ListItemText primary={ ViewTypes.Recording } />
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
+          <ListItemButton data-viewtype={ ViewTypes.Recorded } onClick={ handleMenuButtonClick }>
+            <ListItemIcon>
+              <SaveIcon />
+            </ListItemIcon>
+            <ListItemText primary={ ViewTypes.Recorded } />
           </ListItemButton>
         </ListItem>
         <ListItem>

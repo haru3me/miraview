@@ -13,27 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import type { MiraviewConfig, Program, Schedule, Service } from './types';
 
-import { searchChannelName } from './Miraview';
-
-function deleteRequest(url: URL): void {
-  fetch(url.href,{
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then((response) => {
-      if(response.status == 200){
-        toast("リクエスト成功");
-      }else{
-        toast("返り値: "+response.status.toString());
-      }
-    })
-    .catch((error: Error) => {
-      toast("リクエスト失敗: " + error.message);
-      console.error(error)
-    });
-}
+import { deleteRequest, searchChannelName } from './Miraview';
 
 
 function CancelReservation(config?: MiraviewConfig,programId?: number): void{

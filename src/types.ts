@@ -119,6 +119,8 @@ export const ViewTypes = {
   Programs: '番組表',
   Tuners: 'チューナー',
   Reserved: '予約',
+  Recording: '録画中',
+  Recorded: '録画済み',
   Config: '設定',
 } as const;
 export type ViewType = typeof ViewTypes[keyof typeof ViewTypes]

@@ -26,6 +26,8 @@ import type { MiraviewConfig, Program, Service, Tuner, Version, ViewType } from 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReservedView from './ReservedView';
+import RecordedView from './RecordedView';
+import RecordingView from './RecordingView';
 
 // Themeのpaletteを拡張する
 // https://mui.com/material-ui/customization/palette/#adding-new-colors
@@ -79,6 +81,26 @@ export function postObjectApi(url: URL,body: JSON): void {
     })
     .catch((error: Error) => {
       toast("リクエスト失敗 "+ error.message);
+      console.error(error)
+    });
+}
+
+export function deleteRequest(url: URL): void {
+  fetch(url.href,{
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      if(response.status == 200){
+        toast("リクエスト成功");
+      }else{
+        toast("返り値: "+response.status.toString());
+      }
+    })
+    .catch((error: Error) => {
+      toast("リクエスト失敗: " + error.message);
       console.error(error)
     });
 }
@@ -192,10 +214,13 @@ function Miraview(): JSX.Element {
                         setTunerRefreshKey(!tunerRefreshKey);
                         break;
                       case ViewTypes.Reserved:
+                      case ViewTypes.Recording:
+                      case ViewTypes.Recorded:
                         setSchedulesRefreshKey(!scheduleRefreshKey);
                         break;
                     }
-                  }} sx={{ display: (currentView === ViewTypes.Tuners || currentView === ViewTypes.Reserved) ? 'block' : 'none' }}>
+                  }} sx={{ display: (currentView === ViewTypes.Tuners || currentView === ViewTypes.Reserved || 
+                            currentView === ViewTypes.Recording || currentView === ViewTypes.Recorded) ? 'block' : 'none' }}>
                   <RefreshIcon />
                 </IconButton>
               </Toolbar>
@@ -219,6 +244,18 @@ function Miraview(): JSX.Element {
             <Box sx={{ display: currentView === ViewTypes.Reserved ? 'block' : 'none', overflow: 'auto' }}>
               <LoadingSkelton isLoading={ schedules === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
                 <ReservedView config={ currentConfig } schedules={ schedules } services={services} />
+              </LoadingSkelton>
+            </Box>
+            {/* 録画中一覧 */}
+            <Box sx={{ display: currentView === ViewTypes.Recording ? 'block' : 'none', overflow: 'auto' }}>
+              <LoadingSkelton isLoading={ schedules === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
+                <RecordingView config={ currentConfig } schedules={ schedules } services={services} />
+              </LoadingSkelton>
+            </Box>
+            {/* 録画済み一覧 */}
+            <Box sx={{ display: currentView === ViewTypes.Recorded ? 'block' : 'none', overflow: 'auto' }}>
+              <LoadingSkelton isLoading={ schedules === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
+                <RecordedView config={ currentConfig } schedules={ schedules } services={services} />
               </LoadingSkelton>
             </Box>
             {/* 設定画面 */}
