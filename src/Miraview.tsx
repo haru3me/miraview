@@ -82,6 +82,25 @@ export function postObjectApi(url: URL,body: JSON): void {
     });
 }
 
+export function searchChannelName(destId?: number,services?: Service[]): string{
+  let ret = "err";
+    if(!services || !destId){
+        if( destId)
+            ret = destId.toString()
+        
+        return ret;
+    }
+    ret = destId.toString();
+    for(let one of services){
+      if(one.serviceId == destId){
+        ret = one.name;
+        break;
+      }
+    }
+    // console.log(services);
+    return ret;
+}
+
 function Miraview(): JSX.Element {
   // 今開いているタブ
   const [currentView, setView] = React.useState<ViewType>(ViewTypes.Programs);

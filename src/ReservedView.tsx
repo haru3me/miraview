@@ -13,24 +13,7 @@ import { ToastContainer, toast } from 'react-toastify';
 
 import type { MiraviewConfig, Program, Schedule, Service } from './types';
 
-function searchChannelName(destId?: number,services?: Service[]): string{
-  let ret = "err";
-    if(!services || !destId){
-        if( destId)
-            ret = destId.toString()
-        
-        return ret;
-    }
-    ret = destId.toString();
-    for(let one of services){
-      if(one.serviceId == destId){
-        ret = one.name;
-        break;
-      }
-    }
-    // console.log(services);
-    return ret;
-}
+import { searchChannelName } from './Miraview';
 
 function deleteRequest(url: URL): void {
   fetch(url.href,{

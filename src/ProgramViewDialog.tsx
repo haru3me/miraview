@@ -218,8 +218,12 @@ function MakeReserveProgram(config: MiraviewConfig, program?: ProgramPair){
   }
   `;
 
+  const startdate = new Date(program.program.startAt);
+  const filename: string = '[' + startdate.getFullYear().toString() + startdate.getMonth().toString() + startdate.getDay().toString() + '-' +
+                    startdate.getHours().toString() + startdate.getMinutes().toString() + ']['+ program.service.name + ']' + program.program.name ?? '';
+
   jsonstr = jsonstr.replace("PROGRAM_ID",program.program.id.toString())
-            .replace("RECORDED_FILE",program.program.id.toString() + ".m2ts");
+            .replace("RECORDED_FILE", filename + ".m2ts");
   
   const body = JSON.parse(jsonstr);
   postObjectApi(endpoint,body);
