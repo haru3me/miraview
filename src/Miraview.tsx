@@ -111,6 +111,8 @@ function Miraview(): JSX.Element {
   // チューナー一覧だけで表示されるリロードボタンの画面更新用フラグ
   const [tunerRefreshKey, setTunerRefreshKey] = React.useState<boolean>(false);
 
+  const [reservedRefreshKey, setReservedRefreshKey] = React.useState<boolean>(false);
+
   // APIの戻り値群 いずれもundefinedなら読み込み中で空配列なら失敗
   // 番組一覧
   const [programs, setPrograms] = React.useState<Program[] | undefined>(undefined);
@@ -131,7 +133,6 @@ function Miraview(): JSX.Element {
   React.useEffect(() => {
     fetchArrayApi<Program>(new URL('/api/programs', currentConfig.mirakcUri), setPrograms);
     fetchArrayApi<Service>(new URL('/api/services', currentConfig.mirakcUri), setServices);
-    fetchArrayApi<Schedule>(new URL('/api/recording/schedules', currentConfig.mirakcUri), setReserved);
     fetchObjectApi<Version>(new URL('/api/version', currentConfig.mirakcUri), setMirakcVersion);
   }, [currentConfig.mirakcUri]);
 
@@ -139,6 +140,10 @@ function Miraview(): JSX.Element {
   React.useEffect(() => {
     fetchArrayApi<Tuner>(new URL('/api/tuners', currentConfig.mirakcUri), setTuners);
   }, [currentConfig.mirakcUri, tunerRefreshKey]);
+
+  React.useEffect(() => {
+    fetchArrayApi<Schedule>(new URL('/api/recording/schedules', currentConfig.mirakcUri), setReserved);
+  }, [currentConfig.mirakcUri, reservedRefreshKey]);
 
   const theme = createTheme({
     palette: {
@@ -180,7 +185,16 @@ function Miraview(): JSX.Element {
                 <Typography variant='h6' sx={{ marginLeft: '2rem', flexGrow: 1 }} >
                   { currentView }
                 </Typography>
-                <IconButton onClick={ () => setTunerRefreshKey(!tunerRefreshKey) } sx={{ display: currentView === ViewTypes.Tuners ? 'block' : 'none' }}>
+                <IconButton onClick={ () => {
+                    switch(currentView){
+                      case ViewTypes.Tuners:
+                        setTunerRefreshKey(!tunerRefreshKey);
+                        break;
+                      case ViewTypes.Reserved:
+                        setReservedRefreshKey(!reservedRefreshKey);
+                        break;
+                    }
+                  }} sx={{ display: (currentView === ViewTypes.Tuners || currentView === ViewTypes.Reserved) ? 'block' : 'none' }}>
                   <RefreshIcon />
                 </IconButton>
               </Toolbar>
