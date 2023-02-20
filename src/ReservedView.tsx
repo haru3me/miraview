@@ -23,13 +23,14 @@ function deleteRequest(url: URL): void {
       }
     })
     .then((response) => {
-      console.log(response);
       if(response.status == 200){
         toast("リクエスト成功");
+      }else{
+        toast("返り値: "+response.status.toString());
       }
     })
     .catch((error: Error) => {
-      toast("リクエスト失敗");
+      toast("リクエスト失敗: " + error.message);
       console.error(error)
     });
 }
@@ -43,14 +44,15 @@ function CancelReservation(config?: MiraviewConfig,programId?: number): void{
   deleteRequest(endpoint);
 }
 
-function ReservedView(props: { config: MiraviewConfig, reserved?: Schedule[], services?: Service[] }): JSX.Element {
-    if(!props.reserved || props.reserved.length === 0){
+function ReservedView(props: { config: MiraviewConfig, schedules?: Schedule[], services?: Service[] }): JSX.Element {
+    if(!props.schedules || props.schedules.length === 0){
         return <Typography>予約がありません</Typography>;
     }
-    // console.log(props.reserved);
+    // console.log(props.schedules);
     return (
         <Stack sx={{ margin: '1rem' }} spacing={2}>
-          { props.reserved?.map(reserve =>
+          { props.schedules?.filter(schedule => schedule.state?.includes('scheduled'))
+                                .map(reserve =>
           <Card key={reserve.program?.id?.toString()}>
             <CardHeader
               title={ reserve.program?.name } subheader={ reserve.state}

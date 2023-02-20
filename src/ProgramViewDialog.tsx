@@ -202,6 +202,10 @@ const genre_middle = new Map<number, Map<number, string>>([
   ])],
 ]);
 
+function padStr(num: number,len: number): string{
+  return String(num).padStart(len,'0');
+}
+
 function MakeReserveProgram(config: MiraviewConfig, program?: ProgramPair){
   if(typeof program === 'undefined' || typeof program.program.id === 'undefined'){
     return;
@@ -219,8 +223,8 @@ function MakeReserveProgram(config: MiraviewConfig, program?: ProgramPair){
   `;
 
   const startdate = new Date(program.program.startAt);
-  const filename: string = '[' + startdate.getFullYear().toString() + startdate.getMonth().toString() + startdate.getDay().toString() + '-' +
-                    startdate.getHours().toString() + startdate.getMinutes().toString() + ']['+ program.service.name + ']' + program.program.name ?? '';
+  const filename: string = '[' + padStr(startdate.getFullYear(),4) + padStr(startdate.getMonth(),2)+ padStr(startdate.getDay(),2) + '-' +
+                    padStr(startdate.getHours(),2) + padStr(startdate.getMinutes(),2) + ']['+ program.service.name + ']' + program.program.name ?? 'タイトル不明';
 
   jsonstr = jsonstr.replace("PROGRAM_ID",program.program.id.toString())
             .replace("RECORDED_FILE", filename + ".m2ts");

@@ -71,13 +71,14 @@ export function postObjectApi(url: URL,body: JSON): void {
     .then((response) => {
       if(response.status == 200){
         toast("リクエスト成功");
-      }
-      if(response.status == 201){
-        toast("Created!");
+      }else if(response.status == 201){
+        toast("作成しました");
+      }else{
+        toast("返り値: " + response.status.toString());
       }
     })
     .catch((error: Error) => {
-      toast("リクエスト失敗");
+      toast("リクエスト失敗 "+ error.message);
       console.error(error)
     });
 }
@@ -111,7 +112,7 @@ function Miraview(): JSX.Element {
   // チューナー一覧だけで表示されるリロードボタンの画面更新用フラグ
   const [tunerRefreshKey, setTunerRefreshKey] = React.useState<boolean>(false);
 
-  const [reservedRefreshKey, setReservedRefreshKey] = React.useState<boolean>(false);
+  const [scheduleRefreshKey, setSchedulesRefreshKey] = React.useState<boolean>(false);
 
   // APIの戻り値群 いずれもundefinedなら読み込み中で空配列なら失敗
   // 番組一覧
@@ -121,7 +122,7 @@ function Miraview(): JSX.Element {
   // チューナー一覧
   const [tuners, setTuners] = React.useState<Tuner[] | undefined>(undefined);
   // 予約一覧
-  const [reserved, setReserved] = React.useState<Schedule[] | undefined>(undefined);
+  const [schedules, setSchedules] = React.useState<Schedule[] | undefined>(undefined);
 
   // mirakcバージョン
   const [mirakcVersion, setMirakcVersion] = React.useState<Version | undefined>(undefined);
@@ -142,8 +143,8 @@ function Miraview(): JSX.Element {
   }, [currentConfig.mirakcUri, tunerRefreshKey]);
 
   React.useEffect(() => {
-    fetchArrayApi<Schedule>(new URL('/api/recording/schedules', currentConfig.mirakcUri), setReserved);
-  }, [currentConfig.mirakcUri, reservedRefreshKey]);
+    fetchArrayApi<Schedule>(new URL('/api/recording/schedules', currentConfig.mirakcUri), setSchedules);
+  }, [currentConfig.mirakcUri, scheduleRefreshKey]);
 
   const theme = createTheme({
     palette: {
@@ -191,7 +192,7 @@ function Miraview(): JSX.Element {
                         setTunerRefreshKey(!tunerRefreshKey);
                         break;
                       case ViewTypes.Reserved:
-                        setReservedRefreshKey(!reservedRefreshKey);
+                        setSchedulesRefreshKey(!scheduleRefreshKey);
                         break;
                     }
                   }} sx={{ display: (currentView === ViewTypes.Tuners || currentView === ViewTypes.Reserved) ? 'block' : 'none' }}>
@@ -216,8 +217,8 @@ function Miraview(): JSX.Element {
             </Box>
             {/* 予約一覧 */}
             <Box sx={{ display: currentView === ViewTypes.Reserved ? 'block' : 'none', overflow: 'auto' }}>
-              <LoadingSkelton isLoading={ reserved === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
-                <ReservedView config={ currentConfig } reserved={ reserved } services={services} />
+              <LoadingSkelton isLoading={ schedules === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
+                <ReservedView config={ currentConfig } schedules={ schedules } services={services} />
               </LoadingSkelton>
             </Box>
             {/* 設定画面 */}
