@@ -45,6 +45,14 @@ export default function MenuDrawer(props: { open?: boolean, onClose: () => void,
           </ListItemButton>
         </ListItem>
         <ListItem>
+          <ListItemButton data-viewtype={ ViewTypes.Reserved } onClick={ handleMenuButtonClick }>
+            <ListItemIcon>
+              <NewspaperIcon />
+            </ListItemIcon>
+            <ListItemText primary={ ViewTypes.Reserved } />
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
           <ListItemButton data-viewtype={ ViewTypes.Config } onClick={ handleMenuButtonClick }>
             <ListItemIcon>
               <SettingsIcon />

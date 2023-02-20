@@ -23,6 +23,21 @@ export type Program = {
   genres?: Genre[];
 };
 
+//Schedule
+type ScheduleOptions = {
+  contentPath?: string;
+  priority?: number;
+  preFilters?: string[];
+  postFilters?: string[];
+}
+
+export type Schedule = {
+  state?: string;
+  program?: Program;
+  options?: ScheduleOptions;
+  tags?: string[];
+}
+
 // streamContent/componentTypeはARIB STD-B10の[Table 6-5 stream_content and component_type]に書いてある
 // http://www.arib.or.jp/english/html/overview/doc/6-STD-B10v4_6-E2.pdf#page=114
 // typeとresolutionを見れば十分なので無視する
@@ -103,6 +118,7 @@ export type Version = {
 export const ViewTypes = {
   Programs: '番組表',
   Tuners: 'チューナー',
+  Reserved: '予約',
   Config: '設定',
 } as const;
 export type ViewType = typeof ViewTypes[keyof typeof ViewTypes]

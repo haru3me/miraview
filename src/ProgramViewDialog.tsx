@@ -8,6 +8,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Stack from '@mui/material/Stack';
 
+import {postObjectApi} from './Miraview';
+
 import type { MiraviewConfig, ProgramPair } from './types';
 
 // AudioのcomponentType これもARIB STD-B10の[Table 6-5 stream_content and component_type]に書いてある
@@ -200,6 +202,29 @@ const genre_middle = new Map<number, Map<number, string>>([
   ])],
 ]);
 
+function MakeReserveProgram(config: MiraviewConfig, program?: ProgramPair){
+  if(typeof program === 'undefined' || typeof program.program.id === 'undefined'){
+    return;
+  }
+
+  const endpoint = new URL('/api/recording/schedules',config.mirakcUri);
+  let jsonstr = `
+  {
+    "programId": PROGRAM_ID,
+    "options": {
+      "contentPath": "RECORDED_FILE"
+    },
+    "tags": ["manual"]
+  }
+  `;
+
+  jsonstr = jsonstr.replace("PROGRAM_ID",program.program.id.toString())
+            .replace("RECORDED_FILE",program.program.id.toString() + ".m2ts");
+  
+  const body = JSON.parse(jsonstr);
+  postObjectApi(endpoint,body);
+}
+
 // 番組をクリックした時のダイアログ
 function ProgramViewDialog(props: { pgPair?: ProgramPair; config: MiraviewConfig; onClose: () => void; }): JSX.Element {
   const streamUrl = new URL(`/api/services/${props.pgPair?.service?.id}/stream`, props.config.mirakcUri);
@@ -298,6 +323,7 @@ function ProgramViewDialog(props: { pgPair?: ProgramPair; config: MiraviewConfig
       </DialogContent>
       <DialogActions>
         <Button disabled={ !props.pgPair || !props.config.streamProtocol } autoFocus href={ streamUrl.href }>選局</Button>
+        <Button onClick={() => MakeReserveProgram(props.config,props.pgPair)}>予約</Button>
       </DialogActions>
     </Dialog>
   );

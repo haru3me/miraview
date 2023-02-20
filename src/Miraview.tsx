@@ -20,8 +20,12 @@ import LoadingSkelton from './LoadingSkelton';
 import MenuDrawer from './MenuDrawer';
 import ProgramView from './ProgramView';
 import TunerView from './TunerView';
-import { ViewTypes } from './types';
+import { Schedule, ViewTypes } from './types';
 import type { MiraviewConfig, Program, Service, Tuner, Version, ViewType } from './types';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ReservedView from './ReservedView';
 
 // Themeのpaletteを拡張する
 // https://mui.com/material-ui/customization/palette/#adding-new-colors
@@ -55,6 +59,29 @@ function fetchObjectApi<T>(url: URL, setter: (response: T | undefined) => void):
     .catch((error: Error) => console.error(error.message));
 }
 
+export function postObjectApi(url: URL,body: JSON): void {
+  const poststr = JSON.stringify(body);
+  fetch(url.href,{
+      method: 'POST',
+      body: poststr,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      if(response.status == 200){
+        toast("リクエスト成功");
+      }
+      if(response.status == 201){
+        toast("Created!");
+      }
+    })
+    .catch((error: Error) => {
+      toast("リクエスト失敗");
+      console.error(error)
+    });
+}
+
 function Miraview(): JSX.Element {
   // 今開いているタブ
   const [currentView, setView] = React.useState<ViewType>(ViewTypes.Programs);
@@ -72,6 +99,9 @@ function Miraview(): JSX.Element {
   const [services, setServices] = React.useState<Service[] | undefined>(undefined);
   // チューナー一覧
   const [tuners, setTuners] = React.useState<Tuner[] | undefined>(undefined);
+  // 予約一覧
+  const [reserved, setReserved] = React.useState<Schedule[] | undefined>(undefined);
+
   // mirakcバージョン
   const [mirakcVersion, setMirakcVersion] = React.useState<Version | undefined>(undefined);
 
@@ -82,6 +112,7 @@ function Miraview(): JSX.Element {
   React.useEffect(() => {
     fetchArrayApi<Program>(new URL('/api/programs', currentConfig.mirakcUri), setPrograms);
     fetchArrayApi<Service>(new URL('/api/services', currentConfig.mirakcUri), setServices);
+    fetchArrayApi<Schedule>(new URL('/api/recording/schedules', currentConfig.mirakcUri), setReserved);
     fetchObjectApi<Version>(new URL('/api/version', currentConfig.mirakcUri), setMirakcVersion);
   }, [currentConfig.mirakcUri]);
 
@@ -105,6 +136,19 @@ function Miraview(): JSX.Element {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={theme}>
+       <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        <ToastContainer />
         <CssBaseline enableColorScheme />
         <MenuDrawer open={isDrawerOpen} onClose={ () => setDrawerOpen(false) } onItemSelected={ setView }/>
         <ErrorBoundary>
@@ -135,6 +179,12 @@ function Miraview(): JSX.Element {
             <Box sx={{ display: currentView === ViewTypes.Tuners ? 'block' : 'none', overflow: 'auto' }}>
               <LoadingSkelton isLoading={ tuners === undefined } rows={4} cols={1} itemHeight={200}>
                 <TunerView config={ currentConfig } tuners={ tuners } version={ mirakcVersion } />
+              </LoadingSkelton>
+            </Box>
+            {/* 予約一覧 */}
+            <Box sx={{ display: currentView === ViewTypes.Reserved ? 'block' : 'none', overflow: 'auto' }}>
+              <LoadingSkelton isLoading={ reserved === undefined || services === undefined } rows={4} cols={1} itemHeight={200}>
+                <ReservedView config={ currentConfig } reserved={ reserved } services={services} />
               </LoadingSkelton>
             </Box>
             {/* 設定画面 */}
